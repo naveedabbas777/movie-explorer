@@ -1,39 +1,41 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
-import useDebounce from '../hooks/useDebounce';
 import { searchMovies } from '../services/tmdb';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = useState(() => searchParams.get('query') || '');
-  const [result, setResult] = useState(null);
-  const debouncedQuery = useDebounce(query.trim());
-  const currentResult = result?.query === debouncedQuery ? result : null;
-  const isWaitingForDebounce = query.trim() !== debouncedQuery;
-  const isLoading = Boolean(query.trim()) && (isWaitingForDebounce || !currentResult);
+
+  const startingQuery = searchParams.get('query') || '';
+
+  const [query, setQuery] = useState(startingQuery);
+  const [movies, setMovies] = useState([]);
+  const [error, setError] = useState('');
+
+  function handleQueryChange(event) {
+    const newQuery = event.target.value;
+    setQuery(newQuery);
+
+    if (newQuery.trim() === '') {
+      setMovies([]);
+      setError('');
+    }
+  }
 
   useEffect(() => {
-    if (!debouncedQuery) return undefined;
+    const searchText = query.trim();
+    if (searchText === '') return;
 
-    let isCurrentRequest = true;
-
-    searchMovies(debouncedQuery)
-      .then((data) => {
-        if (isCurrentRequest) {
-          setResult({ query: debouncedQuery, movies: data.results || [] });
-        }
+    searchMovies(searchText)
+      .then((response) => {
+        setMovies(response.results || []);
+        setError('');
       })
-      .catch((error) => {
-        if (isCurrentRequest) {
-          setResult({ query: debouncedQuery, error: error.message });
-        }
+      .catch((searchError) => {
+        setError(searchError.message);
+        setMovies([]);
       });
-
-    return () => {
-      isCurrentRequest = false;
-    };
-  }, [debouncedQuery]);
+  }, [query]);
 
   return (
     <main className="app">
@@ -50,20 +52,22 @@ export default function Search() {
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={handleQueryChange}
           placeholder="Start typing a movie title..."
         />
       </label>
 
-      {isLoading && <p className="message" role="status">Searching movies...</p>}
-      {currentResult?.error && <p className="message error" role="alert">Could not search movies: {currentResult.error}</p>}
-      {currentResult?.movies?.length === 0 && <p className="message">No movies found. Try another title.</p>}
-      {currentResult?.movies?.length > 0 && (
+      {error && (
+        <p className="message error" role="alert">
+          Could not search movies: {error}
+        </p>
+      )}
+
+      {movies.length > 0 && (
         <section className="movie-grid" aria-label="Search results">
-          {currentResult.movies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+          {movies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
         </section>
       )}
-      {!query.trim() && <p className="message">Enter a title to search.</p>}
     </main>
   );
 }

@@ -5,32 +5,36 @@ import { getMovieDetails } from '../services/tmdb';
 
 export default function MovieDetails() {
   const { id } = useParams();
-  const [result, setResult] = useState(null);
-  const currentResult = result?.id === id ? result : null;
+  const [movie, setMovie] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const currentMovie = movie?.id === Number(id) ? movie : null;
 
   useEffect(() => {
-    let isCurrentRequest = true;
+    async function loadMovie() {
+      setLoading(true);
+      setError('');
 
-    getMovieDetails(id)
-      .then((movie) => {
-        if (isCurrentRequest) setResult({ id, movie });
-      })
-      .catch((error) => {
-        if (isCurrentRequest) setResult({ id, error: error.message });
-      });
+      try {
+        const movieData = await getMovieDetails(id);
+        setMovie(movieData);
+      } catch (loadError) {
+        setError(loadError.message);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    return () => {
-      isCurrentRequest = false;
-    };
+    loadMovie();
   }, [id]);
 
   return (
     <main className="app details-page">
       <Link className="back-link" to="/">← Back to trending movies</Link>
 
-      {!currentResult && <p className="message" role="status">Loading movie details...</p>}
-      {currentResult?.error && <p className="message error" role="alert">Could not load this movie: {currentResult.error}</p>}
-      {currentResult?.movie && <MovieInfo movie={currentResult.movie} />}
+      {loading && <p className="message">Loading movie details...</p>}
+      {error && <p className="message error">Could not load this movie: {error}</p>}
+      {currentMovie && <MovieInfo movie={currentMovie} />}
     </main>
   );
 }

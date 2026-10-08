@@ -20,6 +20,7 @@ function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme, setTheme] = useState(() => localStorage.getItem('movie-explorer-theme') || 'light');
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     localStorage.setItem('movie-explorer-theme', theme);
@@ -27,8 +28,11 @@ function AppLayout() {
 
   function handleSearch(event) {
     event.preventDefault();
-    const query = String(new FormData(event.currentTarget).get('query') || '').trim();
-    if (query) navigate(`/search?query=${encodeURIComponent(query)}`);
+    const query = searchText.trim();
+
+    if (query !== '') {
+      navigate(`/search?query=${encodeURIComponent(query)}`);
+    }
   }
 
   return (
@@ -42,14 +46,26 @@ function AppLayout() {
         {location.pathname !== '/search' && (
           <form className="global-search" role="search" onSubmit={handleSearch}>
             <label className="visually-hidden" htmlFor="global-movie-search">Search movies</label>
-            <input id="global-movie-search" name="query" type="search" placeholder="Search movies..." />
+            <input
+              id="global-movie-search"
+              type="search"
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+              placeholder="Search movies..."
+            />
             <button type="submit">Search</button>
           </form>
         )}
         <button
           className="theme-toggle"
           type="button"
-          onClick={() => setTheme((currentTheme) => currentTheme === 'light' ? 'dark' : 'light')}
+          onClick={() => {
+            if (theme === 'light') {
+              setTheme('dark');
+            } else {
+              setTheme('light');
+            }
+          }}
         >
           {theme === 'light' ? 'Dark mode' : 'Light mode'}
         </button>
