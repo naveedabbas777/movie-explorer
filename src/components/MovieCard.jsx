@@ -8,6 +8,10 @@ export default function MovieCard({ movie }) {
   const rating = Number(movie.vote_average || 0).toFixed(1);
   const favoriteClass = isFavorite ? 'favorite-button is-favorite' : 'favorite-button';
 
+  function handleFavoriteClick() {
+    toggleFavorite(movie);
+  }
+
   return (
     <article className="movie-card">
       <Link className="movie-card-link" to={`/movie/${movie.id}`}>
@@ -26,7 +30,7 @@ export default function MovieCard({ movie }) {
       <button
         className={favoriteClass}
         type="button"
-        onClick={() => toggleFavorite(movie)}
+        onClick={handleFavoriteClick}
         aria-label={isFavorite ? `Remove ${movie.title} from favorites` : `Add ${movie.title} to favorites`}
         aria-pressed={isFavorite}
       >

@@ -13,13 +13,15 @@ export default function Favorites() {
         <Link className="search-link" to="/">Back to trending movies</Link>
       </header>
 
-      {favorites.length === 0
-        ? <p className="message">No favorites yet. Add one from a movie card.</p>
-        : (
-          <section className="movie-grid" aria-label="Favorite movies">
-            {favorites.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
-          </section>
-        )}
+      {favorites.length === 0 && (
+        <p className="message">No favorites yet. Add one from a movie card.</p>
+      )}
+
+      {favorites.length > 0 && (
+        <section className="movie-grid" aria-label="Favorite movies">
+          {favorites.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+        </section>
+      )}
     </main>
   );
 }

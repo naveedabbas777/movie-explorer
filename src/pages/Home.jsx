@@ -49,10 +49,7 @@ export default function Home() {
       <div className="movie-filters" aria-label="Filter trending movies">
         <label>
           <span>Genre</span>
-          <select
-            value={selectedGenre}
-            onChange={(event) => setSelectedGenre(event.target.value)}
-          >
+          <select value={selectedGenre} onChange={(event) => setSelectedGenre(event.target.value)}>
             <option value="all">All genres</option>
             {genres.map((genre) => (
               <option key={genre.id} value={genre.id}>{genre.name}</option>
@@ -62,10 +59,7 @@ export default function Home() {
 
         <label>
           <span>Minimum rating</span>
-          <select
-            value={minimumRating}
-            onChange={(event) => setMinimumRating(event.target.value)}
-          >
+          <select value={minimumRating} onChange={(event) => setMinimumRating(event.target.value)}>
             <option value="0">Any rating</option>
             <option value="6">6 and up</option>
             <option value="7">7 and up</option>

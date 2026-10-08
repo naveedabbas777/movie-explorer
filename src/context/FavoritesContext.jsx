@@ -16,11 +16,15 @@ export function FavoritesProvider({ children }) {
 
   function toggleFavorite(movie) {
     setFavorites((currentFavorites) => {
-      const alreadySaved = currentFavorites.some((favorite) => favorite.id === movie.id);
+      const isAlreadyFavorite = currentFavorites.some((favorite) => {
+        return favorite.id === movie.id;
+      });
 
-      return alreadySaved
-        ? currentFavorites.filter((favorite) => favorite.id !== movie.id)
-        : [...currentFavorites, movie];
+      if (isAlreadyFavorite) {
+        return currentFavorites.filter((favorite) => favorite.id !== movie.id);
+      }
+
+      return [...currentFavorites, movie];
     });
   }
 

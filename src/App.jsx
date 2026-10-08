@@ -30,9 +30,20 @@ function AppLayout() {
     event.preventDefault();
     const query = searchText.trim();
 
-    if (query !== '') {
-      navigate(`/search?query=${encodeURIComponent(query)}`);
+    if (query === '') {
+      return;
     }
+
+    navigate(`/search?query=${encodeURIComponent(query)}`);
+  }
+
+  function toggleTheme() {
+    if (theme === 'light') {
+      setTheme('dark');
+      return;
+    }
+
+    setTheme('light');
   }
 
   return (
@@ -59,13 +70,7 @@ function AppLayout() {
         <button
           className="theme-toggle"
           type="button"
-          onClick={() => {
-            if (theme === 'light') {
-              setTheme('dark');
-            } else {
-              setTheme('light');
-            }
-          }}
+          onClick={toggleTheme}
         >
           {theme === 'light' ? 'Dark mode' : 'Light mode'}
         </button>

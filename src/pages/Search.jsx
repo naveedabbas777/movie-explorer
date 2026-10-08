@@ -5,10 +5,7 @@ import { searchMovies } from '../services/tmdb';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
-
-  const startingQuery = searchParams.get('query') || '';
-
-  const [query, setQuery] = useState(startingQuery);
+  const [query, setQuery] = useState(searchParams.get('query') || '');
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState('');
 
@@ -23,18 +20,21 @@ export default function Search() {
   }
 
   useEffect(() => {
-    const searchText = query.trim();
-    if (searchText === '') return;
+    async function loadMovies() {
+      const searchText = query.trim();
+      if (searchText === '') return;
 
-    searchMovies(searchText)
-      .then((response) => {
+      try {
+        const response = await searchMovies(searchText);
         setMovies(response.results || []);
         setError('');
-      })
-      .catch((searchError) => {
+      } catch (searchError) {
         setError(searchError.message);
         setMovies([]);
-      });
+      }
+    }
+
+    loadMovies();
   }, [query]);
 
   return (
@@ -57,11 +57,7 @@ export default function Search() {
         />
       </label>
 
-      {error && (
-        <p className="message error" role="alert">
-          Could not search movies: {error}
-        </p>
-      )}
+      {error && <p className="message error" role="alert">Could not search movies: {error}</p>}
 
       {movies.length > 0 && (
         <section className="movie-grid" aria-label="Search results">

@@ -19,14 +19,22 @@ VITE_TMDB_API_KEY=your_tmdb_api_key
 
 Restart Vite after changing the key. Browser-based apps expose `VITE_` values to the browser, so use a TMDB client API key, not a private credential. The `.env.local` file is ignored by Git.
 
-## Follow the Data
+## How the App Works
 
-1. `src/services/tmdb.js` sends the request and returns TMDB's response.
-2. `src/pages/Home.jsx` calls the service when the page loads and saves the returned movie array in React state.
-3. `src/pages/Search.jsx` holds the search input and renders matching movies.
-4. `src/pages/Search.jsx` sends the movie query as you type and renders the matching results.
-5. `src/components/MovieCard.jsx` displays each movie and links it to `/movie/:id`.
-6. `src/pages/MovieDetails.jsx` reads the ID from the route and asks `src/services/tmdb.js` for that movie's details.
-7. `src/context/FavoritesContext.jsx` shares favorites between pages and saves them in the browser's local storage.
+1. `src/main.jsx` starts React and displays the `App`.
+2. `src/App.jsx` shows the navigation and chooses a page based on the URL.
+3. A page calls a function from `src/services/tmdb.js` to get movie data.
+4. The page stores that data with React `useState` and displays it.
+5. `src/components/MovieCard.jsx` shows one movie. Pages reuse it to show lists of movies.
+6. `src/context/FavoritesContext.jsx` shares favorites between pages and saves them in the browser's local storage.
 
-The `loading` and `error` states show what is happening while the home page or movie details page loads. React Router connects the URL to the correct page component.
+## React Ideas to Practise
+
+- **Components:** Each page and movie card is a reusable piece of the interface.
+- **State:** `useState` remembers values such as the search text, movies, and favorites.
+- **Effects:** `useEffect` loads information from TMDB when a page needs it.
+- **Props:** A page gives a movie to `MovieCard` with `<MovieCard movie={movie} />`.
+- **Routes:** React Router displays the page that matches the current URL.
+- **Local storage:** Favorites and the selected theme remain saved in this browser.
+
+Search runs when you type. The home page and movie details page show loading and error messages while TMDB requests are in progress.
