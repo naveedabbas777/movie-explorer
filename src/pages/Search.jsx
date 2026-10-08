@@ -7,7 +7,6 @@ export default function Search() {
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('query') || '');
   const [movies, setMovies] = useState([]);
-  const [error, setError] = useState('');
 
   function handleQueryChange(event) {
     const newQuery = event.target.value;
@@ -15,26 +14,14 @@ export default function Search() {
 
     if (newQuery.trim() === '') {
       setMovies([]);
-      setError('');
     }
   }
 
   useEffect(() => {
-    async function loadMovies() {
-      const searchText = query.trim();
-      if (searchText === '') return;
+    const searchText = query.trim();
+    if (searchText === '') return;
 
-      try {
-        const response = await searchMovies(searchText);
-        setMovies(response.results || []);
-        setError('');
-      } catch (searchError) {
-        setError(searchError.message);
-        setMovies([]);
-      }
-    }
-
-    loadMovies();
+    searchMovies(searchText).then((data) => setMovies(data.results || []));
   }, [query]);
 
   return (
@@ -56,8 +43,6 @@ export default function Search() {
           placeholder="Start typing a movie title..."
         />
       </label>
-
-      {error && <p className="message error" role="alert">Could not search movies: {error}</p>}
 
       {movies.length > 0 && (
         <section className="movie-grid" aria-label="Search results">

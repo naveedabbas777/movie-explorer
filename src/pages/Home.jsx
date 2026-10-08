@@ -8,25 +8,10 @@ export default function Home() {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [minimumRating, setMinimumRating] = useState('0');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    async function loadMovies() {
-      try {
-        const movieData = await getTrendingMovies();
-        const genreData = await getGenres();
-
-        setMovies(movieData.results || []);
-        setGenres(genreData.genres || []);
-      } catch (loadError) {
-        setError(loadError.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadMovies();
+    getTrendingMovies().then((data) => setMovies(data.results || []));
+    getGenres().then((data) => setGenres(data.genres || []));
   }, []);
 
   const filteredMovies = movies.filter((movie) => {
@@ -68,15 +53,13 @@ export default function Home() {
         </label>
       </div>
 
-      {loading && <p className="message">Loading movies...</p>}
-      {error && <p className="message error">Could not load movies: {error}</p>}
-      {!loading && !error && movies.length === 0 && (
+      {movies.length === 0 && (
         <p className="message">No movies found.</p>
       )}
-      {!loading && !error && movies.length > 0 && filteredMovies.length === 0 && (
+      {movies.length > 0 && filteredMovies.length === 0 && (
         <p className="message">No movies match these filters.</p>
       )}
-      {!loading && !error && filteredMovies.length > 0 && (
+      {filteredMovies.length > 0 && (
         <section className="movie-grid" aria-label="Trending movies">
           {filteredMovies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />

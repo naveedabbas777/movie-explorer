@@ -37,4 +37,4 @@ Restart Vite after changing the key. Browser-based apps expose `VITE_` values to
 - **Routes:** React Router displays the page that matches the current URL.
 - **Local storage:** Favorites and the selected theme remain saved in this browser.
 
-Search runs when you type. The home page and movie details page show loading and error messages while TMDB requests are in progress.
+Search runs when you type. The pages fetch data directly from TMDB without handling request errors. If a request fails or the API key is missing, the movie data will not load.

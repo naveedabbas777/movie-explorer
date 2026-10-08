@@ -7,35 +7,17 @@ export default function MovieDetails() {
   const { id } = useParams();
   const { favorites, toggleFavorite } = useFavorites();
   const [movie, setMovie] = useState(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
   const currentMovie = movie?.id === Number(id) ? movie : null;
   const isFavorite = favorites.some((favorite) => favorite.id === currentMovie?.id);
 
   useEffect(() => {
-    async function loadMovie() {
-      setLoading(true);
-      setError('');
-
-      try {
-        const movieData = await getMovieDetails(id);
-        setMovie(movieData);
-      } catch (loadError) {
-        setError(loadError.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadMovie();
+    getMovieDetails(id).then((data) => setMovie(data));
   }, [id]);
 
   return (
     <main className="app details-page">
       <Link className="back-link" to="/">← Back to trending movies</Link>
 
-      {loading && <p className="message">Loading movie details...</p>}
-      {error && <p className="message error">Could not load this movie: {error}</p>}
       {currentMovie && (
         <article className="movie-details">
           {currentMovie.poster_path && (
